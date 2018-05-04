@@ -19,6 +19,9 @@ case $1 in
   start)
     mkdir -p $LOG_DIR
 
+    # Make sure that `rpcbind` is running; it's disabled in cg-harden-boshrelease
+    service rpcbind start
+
     service nfs-kernel-server start \
       >> $LOG_DIR/nfstestserver.stdout.log \
       2>> $LOG_DIR/nfstestserver.stderr.log
