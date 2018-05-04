@@ -7,21 +7,10 @@ echo "Installing nfs server"
 apt-get update
 apt-get --assume-yes install nfs-kernel-server
 
-mkdir -p <%= p("nfstestserver.export_root_path") %>/export/users
-mkdir -p <%= p("nfstestserver.export_root_path") %>/export/users2000
-mkdir -p <%= p("nfstestserver.export_root_path") %>/export/vol1
-mkdir -p <%= p("nfstestserver.export_root_path") %>/export/vol2
-mkdir -p <%= p("nfstestserver.export_root_path") %>/export/vol3
-mkdir -p <%= p("nfstestserver.export_root_path") %>/export2/certs
-
-chmod 777 <%= p("nfstestserver.export_root_path") %>/export
-chmod 777 <%= p("nfstestserver.export_root_path") %>/export2
-chmod 775 <%= p("nfstestserver.export_root_path") %>/export/users
-chmod 775 <%= p("nfstestserver.export_root_path") %>/export/users2000
-chmod 775 <%= p("nfstestserver.export_root_path") %>/export/vol1
-chmod 775 <%= p("nfstestserver.export_root_path") %>/export/vol2
-chmod 775 <%= p("nfstestserver.export_root_path") %>/export/vol3
-chmod 777 <%= p("nfstestserver.export_root_path") %>/export2/certs
+<% p('nfstestserver.export_volumes', []).each do |volume| %>
+mkdir -p <%= p("nfstestserver.export_root_path") %>/export/<%= volume %>
+chmod 775 <%= p("nfstestserver.export_root_path") %>/export/<%= volume %>
+<% end %>
 
 chown root:vcap <%= p("nfstestserver.export_root_path") %>/export/users
 chown root:2000 <%= p("nfstestserver.export_root_path") %>/export/users2000
