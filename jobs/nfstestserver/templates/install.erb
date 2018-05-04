@@ -10,29 +10,16 @@ apt-get --assume-yes install nfs-kernel-server
 <% p('nfstestserver.export_volumes', []).each do |volume| %>
 mkdir -p <%= p("nfstestserver.export_root_path") %>/export/<%= volume %>
 chmod 775 <%= p("nfstestserver.export_root_path") %>/export/<%= volume %>
+chown root:nobody <%= p("nfstestserver.export_root_path") %>/export/<%= volume %>
 <% end %>
 
-chown root:vcap <%= p("nfstestserver.export_root_path") %>/export/users
-chown root:2000 <%= p("nfstestserver.export_root_path") %>/export/users2000
-chown root:vcap <%= p("nfstestserver.export_root_path") %>/export/vol1
-chown root:vcap <%= p("nfstestserver.export_root_path") %>/export/vol2
-chown root:vcap <%= p("nfstestserver.export_root_path") %>/export/vol3
-
-mkdir -p /export
-mkdir -p /export2
 mount --bind <%= p("nfstestserver.export_root_path") %>/export /export || true
-mount --bind <%= p("nfstestserver.export_root_path") %>/export2 /export2 || true
 
 cat << EOF > /etc/exports
-/                  <%= p("nfstestserver.export_cidr") %>(ro,fsid=0,async)
-/export            <%= p("nfstestserver.export_cidr") %>(rw,no_subtree_check,async)
-/export/users      <%= p("nfstestserver.export_cidr") %>(rw,nohide,no_subtree_check,async)
-/export/users2000  <%= p("nfstestserver.export_cidr") %>(rw,nohide,no_subtree_check,async)
-/export/vol1       <%= p("nfstestserver.export_cidr") %>(rw,nohide,no_subtree_check,async)
-/export/vol2       <%= p("nfstestserver.export_cidr") %>(rw,nohide,no_subtree_check,async)
-/export/vol3       <%= p("nfstestserver.export_cidr") %>(rw,nohide,no_subtree_check,async)
-/export2           <%= p("nfstestserver.export_cidr") %>(rw,no_subtree_check,async,insecure)
-/export2/certs     <%= p("nfstestserver.export_cidr") %>(rw,nohide,no_subtree_check,async,insecure)
+/export <%= p("nfstestserver.export_cidr") %>(ro,fsid=0,async)
+<% p('nfstestserver.export_volumes', []).each do |volume| %>
+/export/<%= volume %> <%= p("nfstestserver.export_cidr") %>(rw,nohide,no_subtree_check,async)
+<% end %>
 EOF
 
 exit 0
