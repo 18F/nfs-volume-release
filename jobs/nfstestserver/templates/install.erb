@@ -13,6 +13,7 @@ chmod 775 <%= p("nfstestserver.export_root_path") %>/export/<%= volume %>
 chown root:vcap <%= p("nfstestserver.export_root_path") %>/export/<%= volume %>
 <% end %>
 
+mkdir -p /export
 mount --bind <%= p("nfstestserver.export_root_path") %>/export /export || true
 
 cat << EOF > /etc/exports
