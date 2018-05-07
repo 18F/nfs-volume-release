@@ -10,7 +10,7 @@ apt-get --assume-yes install nfs-kernel-server
 <% p('nfstestserver.export_volumes', []).each do |volume| %>
 mkdir -p <%= p("nfstestserver.export_root_path") %>/export/<%= volume %>
 chmod 775 <%= p("nfstestserver.export_root_path") %>/export/<%= volume %>
-chown root:nobody <%= p("nfstestserver.export_root_path") %>/export/<%= volume %>
+chown root:vcap <%= p("nfstestserver.export_root_path") %>/export/<%= volume %>
 <% end %>
 
 mount --bind <%= p("nfstestserver.export_root_path") %>/export /export || true
