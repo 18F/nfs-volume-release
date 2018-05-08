@@ -20,7 +20,7 @@ case $1 in
     mkdir -p $LOG_DIR
 
     # Make sure that `rpcbind` is running; it's disabled in cg-harden-boshrelease
-    service rpcbind start || true
+    service rpcbind restart || true
 
     service nfs-kernel-server start \
       >> $LOG_DIR/nfstestserver.stdout.log \
