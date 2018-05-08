@@ -19,6 +19,11 @@ case $1 in
   start)
     mkdir -p $LOG_DIR
 
+    # Hack: wait for hardening on first boot
+    while [ ! -f /tmp/hardening.log ]; do
+      sleep 5
+    done
+
     # Make sure that `rpcbind` is running; it's disabled in cg-harden-boshrelease
     service rpcbind start || true
 
