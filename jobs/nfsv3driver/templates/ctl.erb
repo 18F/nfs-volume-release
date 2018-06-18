@@ -39,7 +39,8 @@ case $1 in
     # Allowed number of open file descriptors
     ulimit -n 100000
 
-    export PATH=/var/vcap/packages/fuse-nfs/bin:/var/vcap/packages/mapfs/bin:$PATH
+    export PATH=/var/vcap/packages/fuse-nfs/bin:$PATH
+    source /var/vcap/packages/mapfs/runtime.env
 
     # ldap connection and credential info are passed via environment
     export LDAP_SVC_USER="<%= p("nfsv3driver.ldap_svc_user") %>"
@@ -48,6 +49,7 @@ case $1 in
     export LDAP_PORT="<%= p("nfsv3driver.ldap_port") %>"
     export LDAP_PROTO="<%= p("nfsv3driver.ldap_proto") %>"
     export LDAP_USER_FQDN="<%= p("nfsv3driver.ldap_user_fqdn") %>"
+    export LDAP_CA_CERT="<%= p("nfsv3driver.ldap_ca_cert") %>"
 
     exec chpst /var/vcap/packages/nfsv3driver/bin/nfsv3driver \
       --listenAddr="<%= p("nfsv3driver.listen_addr") %>" \

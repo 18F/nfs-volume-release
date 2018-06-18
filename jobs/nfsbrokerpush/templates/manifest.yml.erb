@@ -1,34 +1,13 @@
 ---
-<%
-  database_host = nil
-  if_p('nfsbrokerpush.db.host') do |host|
-    database_host = host
-  end.else do
-    database_host = link('database').instances[0].address
-  end
-
-  allowed_options = 'uid,gid,auto_cache,version'
-  if p('nfsbrokerpush.ldap_enabled')
-    allowed_options = 'auto_cache,username,password,version'
-  end
-  if p('nfsbrokerpush.ldap_test_mode')
-    allowed_options = 'auto_cache,uid,gid,username,password,version'
-  end
-%>
-  buildpack: binary_buildpack
-  domain: "<%= p('nfsbrokerpush.app_domain') %>"
-  memory: "<%= p('nfsbrokerpush.memory_in_mb') %>M"
-  env:
-    GOPACKAGENAME: nfsbroker
-    GOVERSION: go1.7
-    SERVICENAME: "<%= p('nfsbrokerpush.service_name') %>"
-    USERNAME: "<%= p('nfsbrokerpush.username') %>"
-    PASSWORD: "<%= p('nfsbrokerpush.password') %>"
-    LOGLEVEL: info
-    DBDRIVERNAME: "<%= p('nfsbrokerpush.db.driver') %>"
-    DBHOST: "<%= database_host %>"
-    DBPORT: "<%= p('nfsbrokerpush.db.port') %>"
-    DBNAME: "<%= p('nfsbrokerpush.db.name') %>"
-    DB_USERNAME: "<%= p('nfsbrokerpush.db.username') %>"
-    DB_PASSWORD: "<%= p('nfsbrokerpush.db.password') %>"
-    ALLOWED_OPTIONS: "<%= allowed_options %>"
+buildpack: binary_buildpack
+domain: "<%= p('nfsbrokerpush.app_domain') %>"
+memory: "<%= p('nfsbrokerpush.memory_in_mb') %>M"
+env:
+  GOPACKAGENAME: nfsbroker
+  GOVERSION: go1.7
+  USERNAME: "<%= p('nfsbrokerpush.username') %>"
+  PASSWORD: "<%= p('nfsbrokerpush.password') %>"
+  <% if_p('nfsbrokerpush.db.username', 'nfsbrokerpush.db.password') do |username, password| %>
+  DB_USERNAME: "<%= username %>"
+  DB_PASSWORD: "<%= password %>"
+  <% end %>
