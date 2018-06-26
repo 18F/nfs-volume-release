@@ -4,6 +4,7 @@ name: nfstestserver
 templates:
   install.erb: bin/pre-start
   ctl.erb: bin/nfstestserver_ctl
+  post-stop.erb: bin/post-stop
 
 packages: []
 
