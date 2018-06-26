@@ -1,0 +1,9 @@
+#!/bin/bash
+
+
+# Check the paths from /etc/exports matching /export and unmount them
+for path in $(cat /etc/exports | grep export | awk '{ print $1 }')
+do
+  umount "${path}"
+done
+
