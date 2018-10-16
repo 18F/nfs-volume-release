@@ -1,18 +1,16 @@
 #!/bin/bash -exu
 
-export PATH="/var/vcap/packages/cf-cli-nfsvolume/bin:$PATH"
+export PATH="/var/vcap/packages/cf-cli-6-linux/bin:$PATH"
 export CF_HOME=`pwd`/home/cf
 export CF_DIAL_TIMEOUT=<%= p('nfsbrokerpush.cf.dial_timeout') %>
 
 SCHEME=https
 DOMAIN=<%= p('nfsbrokerpush.domain') %>
-ADMIN_USER=<%= p('nfsbrokerpush.cf.admin_user') %>
-ADMIN_PASSWORD="<%= p('nfsbrokerpush.cf.admin_password') %>"
 API_ENDPOINT=$SCHEME://api.$DOMAIN
 ORG=<%= p('nfsbrokerpush.organization') %>
 SPACE=<%= p('nfsbrokerpush.space') %>
 APP_NAME=<%= p('nfsbrokerpush.app_name') %>
-SERVICE_BROKER_NAME=nfsbroker
+SERVICE_BROKER_NAME=<%= p('nfsbrokerpush.broker_name') %>
 SERVICES_CONFIG=/var/vcap/jobs/nfsbrokerpush/config/services.json
 SYSLOG_URL="<%= p('nfsbrokerpush.syslog_url') %>"
 MANIFEST=/var/vcap/jobs/nfsbrokerpush/manifest.yml
@@ -31,7 +29,11 @@ DEPLOYMENT_STATUS=0
 
 function authenticate_and_target() {
   cf api $API_ENDPOINT <% if p('nfsbrokerpush.skip_cert_verify') %>--skip-ssl-validation<% end %>
-  cf auth $ADMIN_USER "$ADMIN_PASSWORD"
+  <% if_p('nfsbrokerpush.cf.client_id', 'nfsbrokerpush.cf.client_secret') do |client_id, client_secret| %>
+    cf auth "<%= client_id %>" "<%= client_secret %>" --client-credentials
+  <% end.else do %>
+    cf auth "<%= p('nfsbrokerpush.cf.admin_user') %>" "<%= p('nfsbrokerpush.cf.admin_password') %>"
+  <% end %>
   cf create-org $ORG
   cf target -o $ORG
   cf create-space $SPACE
@@ -99,9 +101,16 @@ function push_app() {
   mkdir -p /var/vcap/data/tmp
   export TMPDIR=/var/vcap/data/tmp
 
+  local app_stack
+  app_stack="cflinuxfs2"
+
+  if [[ -n "`cf stacks | grep cflinuxfs3`" ]]; then
+    app_stack="cflinuxfs3"
+  fi
+
   pushd /var/vcap/packages/nfsbroker > /dev/null
     set +e
-      cf push "${APP_NAME}" -i 1
+      cf push "${APP_NAME}" -i 1 -s ${app_stack}
       exit_code=$?
     set -e
 

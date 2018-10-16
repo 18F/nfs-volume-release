@@ -8,4 +8,3 @@ check process rpcbind
   start program = "/usr/sbin/service rpcbind start" with timeout 60 seconds
   stop program  = "/usr/sbin/service rpcbind stop"
   if failed host 127.0.0.1 port 111 then restart
-

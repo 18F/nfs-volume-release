@@ -14,7 +14,6 @@ templates:
 packages:
   - nfsbroker
   - golang-nfsvolume
-  - cf-cli-nfsvolume
 
 consumes:
   - name: database
@@ -30,6 +29,10 @@ properties:
     description: 'username of the CF admin user'
   nfsbrokerpush.cf.admin_password:
     description: 'password of the CF admin user'
+  nfsbrokerpush.cf.client_id:
+    description: 'ID of the CF client'
+  nfsbrokerpush.cf.client_secret:
+    description: 'Secret of the CF client'
   nfsbrokerpush.cf.dial_timeout:
     description: 'CF CLI connection dial timeout'
     default: 5
@@ -73,6 +76,9 @@ properties:
   nfsbrokerpush.credhub.uaa_client_secret:
     default: ""
     description: "(optional) UAA client secret when using CredHub to store broker state"
+  nfsbrokerpush.store_id:
+    default: "nfsbroker"
+    description: "(optional) Store ID used to namespace instance details and bindings in store (CredHub only)"
   nfsbrokerpush.syslog_url:
     description: 'external log service URL'
   nfsbrokerpush.error_on_misconfiguration:
@@ -99,12 +105,15 @@ properties:
   nfsbrokerpush.create_credhub_security_group:
     description: 'true if the errand should create a security group to allow traffic to any ip on ports 8443,8844'
     default: false
+  nfsbrokerpush.broker_name:
+    description: 'name of the service broker registered in CF'
+    default: nfsbroker
   nfsbrokerpush.services:
     description: "List of services and plans supported by broker"
     default:
     - id: nfsbroker
-      name: "nfs"
-      description: "Existing NFSv3 volumes (see: https://code.cloudfoundry.org/nfs-volume-release/)"
+      name: "nfs-legacy"
+      description: "Existing NFSv3 volumes (Deprecated)"
       bindable: true
       plan_updatable: false
       tags: ["nfs"]
@@ -113,9 +122,9 @@ properties:
       - id: Existing
         name: "Existing"
         description: "A preexisting filesystem"
-    - id: "c997f8f26-e10c-11e7-80c1-9a214cf093ae"
-      name: "nfs-experimental"
-      description: "Experimental support for NFSv3 and v4"
+    - id: "997f8f26-e10c-11e7-80c1-9a214cf093ae"
+      name: "nfs"
+      description: "Existing NFSv3 and v4 volumes (see: https://code.cloudfoundry.org/nfs-volume-release/)"
       bindable: true
       plan_updatable: false
       tags: ["nfs", "experimental"]

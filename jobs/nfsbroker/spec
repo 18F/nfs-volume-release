@@ -6,6 +6,7 @@ templates:
   services.json.erb: config/services.json
   db_ca.crt.erb: db_ca.crt
   credhub_ca.crt.erb: credhub_ca.crt
+  uaa_ca.crt.erb: uaa_ca.crt
 
 packages:
 - golang-nfsvolume
@@ -56,6 +57,11 @@ properties:
   nfsbroker.credhub.uaa_client_secret:
     default: ""
     description: "(optional) UAA client secret when using CredHub to store broker state"
+  nfsbroker.credhub.uaa_ca_cert:
+    description: "(optional) CA Cert to verify UAA SSL connection when using CredHub to store broker state"
+  nfsbroker.store_id:
+    default: "nfsbroker"
+    description: "(optional) Store ID used to namespace instance details and bindings in store (CredHub only)"
   nfsbroker.allowed_options:
     description: "comma separated list of white-listed options that may be set during create or bind operations."
     example: "uid,gid,allow_root,allow_other,nfs_uid,nfs_gid,auto_cache,fsname,username,password"
@@ -68,8 +74,8 @@ properties:
     description: "List of services and plans supported by broker"
     default:
     - id: nfsbroker
-      name: "nfs"
-      description: "Existing NFSv3 volumes (see: https://code.cloudfoundry.org/nfs-volume-release/)"
+      name: "nfs-legacy"
+      description: "Existing NFSv3 volumes (Deprecated)"
       bindable: true
       plan_updatable: false
       tags: ["nfs"]
@@ -78,9 +84,9 @@ properties:
       - id: Existing
         name: "Existing"
         description: "A preexisting filesystem"
-    - id: "c997f8f26-e10c-11e7-80c1-9a214cf093ae"
-      name: "nfs-experimental"
-      description: "Experimental support for NFSv3 and v4"
+    - id: "997f8f26-e10c-11e7-80c1-9a214cf093ae"
+      name: "nfs"
+      description: "Existing NFSv3 and v4 volumes (see: https://code.cloudfoundry.org/nfs-volume-release/)"
       bindable: true
       plan_updatable: false
       tags: ["nfs", "experimental"]

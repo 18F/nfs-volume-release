@@ -14,6 +14,18 @@
     authorized-grant-types: client_credentials
     secret: ((nfs-broker-credhub-uaa-client-secret))
 - type: replace
+  path: /instance_groups/name=credhub/jobs/name=credhub/properties/credhub/authorization/permissions/-
+  value:
+    actors:
+    - uaa-client:nfs-broker-credhub-client
+    operations:
+    - read
+    - write
+    - delete
+    - read_acl
+    - write_acl
+    path: /nfsbroker/*
+- type: replace
   path: /instance_groups/-
   value:
     azs: [z1]
@@ -26,7 +38,7 @@
           app_name: nfs-broker-credhub
           domain: ((system_domain))
           app_domain: ((system_domain))
-          register_broker: false
+          register_broker: true
           create_sql_security_group: false
           create_credhub_security_group: true
           cf:
@@ -36,6 +48,7 @@
           space: nfs-broker-space
           password: ((nfs-broker-credhub-password))
           username: nfs-broker
+          broker_name: nfs-credhub-broker
           syslog_url: ""
           skip_cert_verify: true
           credhub:
@@ -55,7 +68,7 @@
               name: "Existing"
               description: "A preexisting filesystem"
           - id: "d8ab29a9-81d0-4e45-afcd-fb9ed858ccf4"
-            name: "nfs-experimental"
+            name: "nfs-credhub-experimental"
             description: "Experimental support for NFSv3 and v4 with CredHub as a store"
             bindable: true
             plan_updatable: false
@@ -65,34 +78,11 @@
             - id: "2e315570-802f-44fd-886c-1a2d6676da9d"
               name: "Existing"
               description: "A preexisting filesystem"
+          store_id: nfsbroker
       release: nfs-volume
+    - name: cf-cli-6-linux
+      release: cf-cli
     name: nfs-broker-credhub-push
-    networks:
-    - name: default
-    stemcell: default
-    vm_type: minimal
-- type: replace
-  path: /instance_groups/-
-  value:
-    azs:
-    - z1
-    instances: 1
-    jobs:
-    - name: broker-registrar
-      properties:
-        cf:
-          api_url: api.((system_domain))
-          password: ((cf_admin_password))
-          skip_ssl_validation: true
-          username: admin
-        servicebroker:
-          name: nfs-broker-credhub
-          password: ((nfs-broker-password))
-          url: http://nfs-broker-credhub.((system_domain))
-          username: nfs-broker
-      release: broker-registrar
-    lifecycle: errand
-    name: nfs-broker-credhub-registrar
     networks:
     - name: default
     stemcell: default
@@ -127,13 +117,6 @@
     sha1: de807ffa3fc84949bb92edac6a4152245826d6da
     url: https://bosh.io/d/github.com/cloudfoundry/nfs-volume-release?v=1.2.0
     version: 1.2.0
-- type: replace
-  path: /releases/name=broker-registrar?
-  value:
-    name: broker-registrar
-    sha1: d44d9af8fd06ecf6d50004c9bfd5516a6e482201
-    url: https://bosh.io/d/github.com/cloudfoundry-community/broker-registrar-boshrelease?v=3.4.0
-    version: 3.4.0
 - type: replace
   path: /releases/name=mapfs?
   value:
